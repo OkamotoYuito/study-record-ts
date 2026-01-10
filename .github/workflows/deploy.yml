@@ -1,0 +1,30 @@
+name: Test
+
+on:
+  pull_request:
+    branches:
+      - "**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: install
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Install Firebase CLI
+        run: pnpm install -g firebase-tools
+
+      - name: Deploy
+        run: firebase deploy --project study-record-ts-0109 --token "${{ secrets.FIREBASE_TOKEN }}"
