@@ -1,7 +1,7 @@
 function App() {
   return (
     <>
-      <h1>Study Record</h1>
+      <h1>Study Record with TypeScript</h1>
     </>
   );
 }
