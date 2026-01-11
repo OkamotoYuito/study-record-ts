@@ -5,6 +5,8 @@ import App from "../App";
 describe("title", () => {
   it("should render title", () => {
     render(<App />);
-    expect(screen.getByText("Study Record")).toBeInTheDocument();
+    expect(
+      screen.getByText("Study Record with TypeScript")
+    ).toBeInTheDocument();
   });
 });
