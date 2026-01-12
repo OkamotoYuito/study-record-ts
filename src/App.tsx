@@ -1,85 +1,105 @@
-import { Button, Field, Heading, Input, Stack, Text } from "@chakra-ui/react";
+import {
+  Button,
+  Center,
+  Heading,
+  Spinner,
+  Stack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { fetchRecords, supabase } from "./server/fetchRecords";
-
-export type record = {
-  created_at: string | null;
-  id: string;
-  time: number | null;
-  title: string | null;
-};
+import { Modal } from "./components/modal";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Inputs, record } from "./types/interfaces";
+import { RegisterForm } from "./components/RegisterForm";
+import { Loading } from "./components/Loading";
 
 function App() {
-  const [title, setTitle] = useState<string>("");
-  const [time, setTime] = useState<number>(0);
-  const [error, setError] = useState<boolean>(false);
   const [records, setRecords] = useState<record[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   const totalTime = records.reduce(
     (total, item) => total + (item.time || 0),
     0
   );
 
-  const onChangeTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-  };
-  const onChangeTime = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTime(Number(e.target.value));
-  };
-
-  const onClickRegister = async () => {
-    checkError();
+  const onClickRegister: SubmitHandler<Inputs> = async () => {
     const { error } = await supabase
       .from("study-record")
       .insert({ time, title });
-
-    console.log("supabase");
-  };
-
-  const onClickDelete = () => {};
-
-  const checkError = () => {
-    if (title === "" || time <= 0) {
-      setError(true);
+    if (error) {
+      console.log("Error register error:", error);
+      setLoading(false);
+    } else {
+      setOpen(true);
+      loadRecords();
+      reset();
     }
   };
 
-  useEffect(() => {
-    const loadRecords = async () => {
-      try {
-        const data = await fetchRecords();
-        if (data) {
-          setRecords(data);
-        }
-      } finally {
+  const onClickDelete = async (id: string) => {
+    setLoading(true);
+    const { error } = await supabase.from("study-record").delete().eq("id", id);
+    if (error) {
+      console.log("Error delete error:", error);
+      setLoading(false);
+    } else {
+      loadRecords();
+    }
+  };
+
+  const loadRecords = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchRecords();
+      if (data) {
+        setRecords(data);
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const defaultValues = {
+    title: "",
+    time: 0,
+  };
+
+  const { control, handleSubmit, reset, watch } = useForm<Inputs>({
+    defaultValues,
+    mode: "onChange",
+  });
+
+  const title = watch("title");
+  const time = watch("time");
+
+  useEffect(() => {
     loadRecords();
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setOpen(false);
+    }, 1500);
+  }, [open]);
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <>
-      <Stack p="5">
+      <Stack p="5" alignItems="center">
         <Heading fontSize="3xl" textAlign="center" padding="10px">
           Study Record with TypeScript
         </Heading>
-        <form onSubmit={onClickRegister}>
-          <Stack gap="4" align="flex-start" maxW="sm">
-            <Field.Root>
-              <Field.Label>学習内容</Field.Label>
-              <Input placeholder="例：数学" onChange={onChangeTitle} />
-              <Field.ErrorText></Field.ErrorText>
-            </Field.Root>
+        <RegisterForm
+          control={control}
+          onSubmit={handleSubmit(onClickRegister)}
+        />
 
-            <Field.Root>
-              <Field.Label>学習時間</Field.Label>
-              <Input placeholder="例：2 (2時間)" onChange={onChangeTime} />
-              <Field.ErrorText></Field.ErrorText>
-            </Field.Root>
-
-            <Button type="submit">登録</Button>
-          </Stack>
-        </form>
         <div>
           <Text>入力されている学習内容：{title}</Text>
           <Text>入力されている学習時間：{time}</Text>
@@ -91,7 +111,7 @@ function App() {
               <li key={record.id}>
                 {record.title}：{record.time}時間
                 <Button
-                  onClick={onClickDelete}
+                  onClick={() => onClickDelete(record.id)}
                   size="xs"
                   variant="outline"
                   rounded="md"
@@ -104,6 +124,9 @@ function App() {
           <Text>合計時間：{totalTime}時間</Text>
         </div>
       </Stack>
+      <Modal open={open} setOpen={setOpen}>
+        ✅️ 正常に登録されました
+      </Modal>
     </>
   );
 }
