@@ -1,8 +1,8 @@
 import { Box, Flex, Heading, Separator, Stack, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Inputs, record } from "./types/interfaces";
-import { RegisterForm } from "./components/RegisterForm";
+import { Inputs } from "./types/interfaces";
+import { RegisterFormModal } from "./components/RegisterFormModal";
 import { Loading } from "./components/Loading";
 import { Modal } from "./components/Modal";
 import { useRecords } from "./hooks/useRecords";
@@ -75,7 +75,7 @@ function App() {
           w={["100%", "400px"]}
           rounded="2xl"
         >
-          <RegisterForm
+          <RegisterFormModal
             control={control}
             onSubmit={handleSubmit(onClickRegister)}
           />
