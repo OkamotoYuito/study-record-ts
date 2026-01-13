@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { record } from "../types/interfaces";
-import { supabase } from "../server/fetchRecords";
+import { supabase } from "../server/supabaseClient";
 
 export const useRecords = () => {
   const [records, setRecords] = useState<record[]>([]);

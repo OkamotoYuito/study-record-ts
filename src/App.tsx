@@ -1,12 +1,12 @@
-import { Button, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, Separator, Stack, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { supabase } from "./server/fetchRecords";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Inputs, record } from "./types/interfaces";
 import { RegisterForm } from "./components/RegisterForm";
 import { Loading } from "./components/Loading";
 import { Modal } from "./components/Modal";
 import { useRecords } from "./hooks/useRecords";
+import { RecordList } from "./components/RecordList";
 
 function App() {
   const [successOpen, setSuccessOpen] = useState<boolean>(false);
@@ -59,39 +59,57 @@ function App() {
 
   return (
     <>
-      <Stack p="5" alignItems="center">
+      <Stack
+        p="5"
+        direction="column"
+        alignItems="center"
+        minH="100vh"
+        w="100vw"
+      >
         <Heading fontSize="3xl" textAlign="center" padding="10px">
           Study Record with TypeScript
         </Heading>
-        <RegisterForm
-          control={control}
-          onSubmit={handleSubmit(onClickRegister)}
-        />
+        <Box
+          p="30px"
+          backgroundColor="gray.100"
+          w={["100%", "400px"]}
+          rounded="2xl"
+        >
+          <RegisterForm
+            control={control}
+            onSubmit={handleSubmit(onClickRegister)}
+          />
 
-        <div>
-          <Text>入力されている学習内容：{title}</Text>
-          <Text>入力されている学習時間：{time}</Text>
-        </div>
-        <div>
-          <Heading>記録一覧</Heading>
-          <ul>
-            {records.map((record) => (
-              <li key={record.id}>
-                {record.title}：{record.time}時間
-                <Button
-                  onClick={() => deleteRecord(record.id)}
-                  size="xs"
-                  variant="outline"
-                  rounded="md"
-                >
-                  x
-                </Button>
-              </li>
-            ))}
-          </ul>
-          <Text>合計時間：{totalTime}時間</Text>
-        </div>
+          <div style={{ paddingTop: "5px" }}>
+            <Text>入力されている学習内容：{title}</Text>
+            <Text>入力されている学習時間：{time}</Text>
+          </div>
+          <div>
+            <Flex
+              justifyContent="space-between"
+              alignItems="center"
+              paddingTop="5px"
+            >
+              <Heading fontSize="xl">記録一覧</Heading>
+              <Text fontSize="lg" fontWeight="semibold">
+                合計時間：{totalTime}時間
+              </Text>
+            </Flex>
+
+            <ul>
+              {records.map((record) => (
+                <RecordList
+                  key={record.id}
+                  record={record}
+                  deleteRecord={deleteRecord}
+                />
+              ))}
+              <Separator />
+            </ul>
+          </div>
+        </Box>
       </Stack>
+
       <Modal open={successOpen} setOpen={setSuccessOpen}>
         ✅️ 正常に登録されました
       </Modal>

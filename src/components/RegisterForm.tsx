@@ -25,6 +25,7 @@ export const RegisterForm = (props: Props) => {
                 placeholder="例：数学"
                 {...field}
                 value={field.value || ""}
+                backgroundColor="white"
               />
               {fieldState.error && (
                 <Field.ErrorText>{fieldState.error.message}</Field.ErrorText>
@@ -46,6 +47,7 @@ export const RegisterForm = (props: Props) => {
               <Input
                 type="number"
                 placeholder="例：2 (時間)"
+                backgroundColor="white"
                 {...field}
                 value={field.value || ""}
                 onChange={(e) => field.onChange(Number(e.target.value))}
