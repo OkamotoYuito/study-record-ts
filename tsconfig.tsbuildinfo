@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/tests/appcomponent.spec.tsx"],"version":"5.9.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/loading.tsx","./src/components/modal.tsx","./src/components/registerform.tsx","./src/components/ui/color-mode.tsx","./src/components/ui/provider.tsx","./src/components/ui/toaster.tsx","./src/components/ui/tooltip.tsx","./src/server/fetchrecords.ts","./src/tests/appcomponent.spec.tsx","./src/types/interfaces.ts","./src/types/supabase.ts"],"version":"5.9.3"}
