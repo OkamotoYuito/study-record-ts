@@ -50,7 +50,7 @@ function App() {
   }, [successOpen]);
 
   useEffect(() => {
-    setErrorOpen(true);
+    if (error) setErrorOpen(true);
   }, [error]);
 
   if (isLoading) {
