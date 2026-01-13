@@ -15,12 +15,3 @@ export const supabase = createClient<Database>(
   supabaseUrl as string,
   supabaseKey as string
 );
-
-export const fetchRecords = async () => {
-  const { data, error } = await supabase.from("study-record").select("*");
-  if (error) {
-    console.error("Fetch error:", error);
-    // TODO エラーをモーダル表示にする (component)
-  }
-  return data;
-};

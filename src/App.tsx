@@ -1,64 +1,31 @@
-import {
-  Button,
-  Center,
-  Heading,
-  Spinner,
-  Stack,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Button, Heading, Stack, Text } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { fetchRecords, supabase } from "./server/fetchRecords";
-import { Modal } from "./components/modal";
+import { supabase } from "./server/fetchRecords";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Inputs, record } from "./types/interfaces";
 import { RegisterForm } from "./components/RegisterForm";
 import { Loading } from "./components/Loading";
+import { Modal } from "./components/Modal";
+import { useRecords } from "./hooks/useRecords";
 
 function App() {
-  const [records, setRecords] = useState<record[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [open, setOpen] = useState<boolean>(false);
+  const [successOpen, setSuccessOpen] = useState<boolean>(false);
+  const [errorOpen, setErrorOpen] = useState<boolean>(false);
+  const { records, isLoading, error, addRecord, deleteRecord } = useRecords();
 
   const totalTime = records.reduce(
     (total, item) => total + (item.time || 0),
     0
   );
 
-  const onClickRegister: SubmitHandler<Inputs> = async () => {
-    const { error } = await supabase
-      .from("study-record")
-      .insert({ time, title });
-    if (error) {
-      console.log("Error register error:", error);
-      setLoading(false);
-    } else {
-      setOpen(true);
-      loadRecords();
-      reset();
-    }
-  };
-
-  const onClickDelete = async (id: string) => {
-    setLoading(true);
-    const { error } = await supabase.from("study-record").delete().eq("id", id);
-    if (error) {
-      console.log("Error delete error:", error);
-      setLoading(false);
-    } else {
-      loadRecords();
-    }
-  };
-
-  const loadRecords = async () => {
+  const onClickRegister: SubmitHandler<Inputs> = async (data: Inputs) => {
     try {
-      setLoading(true);
-      const data = await fetchRecords();
-      if (data) {
-        setRecords(data);
-      }
-    } finally {
-      setLoading(false);
+      await addRecord(data.title, data.time);
+      reset();
+      setSuccessOpen(true);
+    } catch (e) {
+      console.log("登録失敗, e");
+      setErrorOpen(true);
     }
   };
 
@@ -76,16 +43,17 @@ function App() {
   const time = watch("time");
 
   useEffect(() => {
-    loadRecords();
-  }, []);
+    const timer = setTimeout(() => {
+      setSuccessOpen(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [successOpen]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setOpen(false);
-    }, 1500);
-  }, [open]);
+    setErrorOpen(true);
+  }, [error]);
 
-  if (loading) {
+  if (isLoading) {
     return <Loading />;
   }
 
@@ -111,7 +79,7 @@ function App() {
               <li key={record.id}>
                 {record.title}：{record.time}時間
                 <Button
-                  onClick={() => onClickDelete(record.id)}
+                  onClick={() => deleteRecord(record.id)}
                   size="xs"
                   variant="outline"
                   rounded="md"
@@ -124,8 +92,11 @@ function App() {
           <Text>合計時間：{totalTime}時間</Text>
         </div>
       </Stack>
-      <Modal open={open} setOpen={setOpen}>
+      <Modal open={successOpen} setOpen={setSuccessOpen}>
         ✅️ 正常に登録されました
+      </Modal>
+      <Modal open={errorOpen} setOpen={setErrorOpen} error={errorOpen}>
+        ❌️ エラーが発生しました
       </Modal>
     </>
   );

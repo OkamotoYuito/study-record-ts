@@ -5,10 +5,11 @@ type Props = {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
   children: ReactNode;
+  error?: boolean;
 };
 
 export const Modal = (props: Props) => {
-  const { open, setOpen, children } = props;
+  const { open, setOpen, children, error } = props;
 
   return (
     <Dialog.Root
@@ -21,7 +22,11 @@ export const Modal = (props: Props) => {
         <Dialog.Positioner>
           <Dialog.Content alignItems="center">
             <Dialog.Header>
-              <Dialog.Title>{children}</Dialog.Title>
+              {error ? (
+                <Dialog.Title color="red">{children}</Dialog.Title>
+              ) : (
+                <Dialog.Title>{children}</Dialog.Title>
+              )}
             </Dialog.Header>
             <Dialog.CloseTrigger asChild>
               <CloseButton size="sm" />
