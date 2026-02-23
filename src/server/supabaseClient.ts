@@ -11,7 +11,7 @@ if (!supabaseKey) {
   throw new Error("VITE_SUPABASE_PUBLISHABLE_KEY is not defined");
 }
 
-export const supabase = createClient<Database>(
+export const supabaseClient = createClient<Database>(
   supabaseUrl as string,
   supabaseKey as string
 );

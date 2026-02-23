@@ -1,4 +1,4 @@
-import { Button, CloseButton, Dialog, Portal } from "@chakra-ui/react";
+import { CloseButton, Dialog, Portal } from "@chakra-ui/react";
 import { ReactNode } from "react";
 
 type Props = {

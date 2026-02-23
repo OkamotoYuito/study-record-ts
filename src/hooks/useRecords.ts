@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { record } from "../types/interfaces";
-import { supabase } from "../server/supabaseClient";
+import { supabaseClient } from "../server/supabaseClient";
 
 export const useRecords = () => {
   const [records, setRecords] = useState<record[]>([]);
@@ -11,7 +11,9 @@ export const useRecords = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase.from("study-record").select("*");
+      const { data, error } = await supabaseClient
+        .from("study-record")
+        .select("*");
       if (error) throw error;
       setRecords(data || []);
     } catch (err) {
@@ -28,7 +30,7 @@ export const useRecords = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from("study-record")
         .insert({ title, time });
       if (error) {
@@ -50,7 +52,7 @@ export const useRecords = () => {
     setIsLoading(true);
     setError(null); // ✅ エラーをリセット
     try {
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from("study-record")
         .delete()
         .eq("id", id);
