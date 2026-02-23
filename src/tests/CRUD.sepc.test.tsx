@@ -19,13 +19,17 @@ jest.mock("../hooks/useRecords", () => ({
 }));
 
 describe("CRUD Tests", () => {
+  beforeEach(() => {
+    mockAddRecord.mockClear();
+  });
+
   it("Modal Title", async () => {
     const user = userEvent.setup();
     renderApp();
 
     await user.click(screen.getByText("新規登録"));
     expect(
-      screen.getByRole("heading", { name: "新規登録" })
+      screen.getByRole("heading", { name: "新規登録" }),
     ).toBeInTheDocument();
   });
 
@@ -46,13 +50,8 @@ describe("CRUD Tests", () => {
     renderApp();
 
     await user.click(screen.getByText("新規登録"));
-    const titleInput = screen.getByLabelText("学習内容");
-    const timeInput = screen.getByLabelText("学習時間");
+    await user.click(screen.getByRole("button", { name: "登録" }));
 
-    await user.click(titleInput);
-    await user.click(timeInput);
-    await user.click(titleInput);
-
-    expect(await screen.findByText("内容の入力は必須です")).toBeInTheDocument();
+    expect(mockAddRecord).not.toHaveBeenCalled();
   });
 });

@@ -15,7 +15,7 @@ function App() {
 
   const totalTime = records.reduce(
     (total, item) => total + (item.time || 0),
-    0
+    0,
   );
 
   const onClickRegister: SubmitHandler<Inputs> = async (data: Inputs) => {
